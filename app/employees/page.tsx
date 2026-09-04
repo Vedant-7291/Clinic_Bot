@@ -1,17 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  Search, 
-  Mail, 
-  Phone, 
-  Calendar, 
+import {
+  Search,
+  Mail,
+  Phone,
+  Calendar,
   User,
   Users,
   Heart,
-  Brain,
   Baby,
-  MoreVertical
+  Activity,
+  Smile,
+  Ear,
+  Sparkles,
+  Venus,
+  Stethoscope,
+  MoreVertical,
 } from 'lucide-react';
 
 interface Employee {
@@ -24,24 +29,28 @@ interface Employee {
   specialization: string;
 }
 
+// ============================================
+// One staff member covering each department the WhatsApp bot lets
+// patients book into, so every booking has somewhere to route to.
+// ============================================
 const employees: Employee[] = [
   {
     id: '1',
-    name: 'Dr. Sarah Johnson',
-    role: 'Senior Physician',
-    department: 'Cardiology',
-    email: 'sarah.johnson@clinic.com',
-    phone: '+1 (555) 123-4567',
-    specialization: 'Interventional Cardiology',
+    name: 'Dr. Anil Kapoor',
+    role: 'General Physician',
+    department: 'General Medicine',
+    email: 'anil.kapoor@clinic.com',
+    phone: '+1 (555) 111-2233',
+    specialization: 'Family & Internal Medicine',
   },
   {
     id: '2',
-    name: 'Dr. Michael Chen',
-    role: 'Neurologist',
-    department: 'Neurology',
-    email: 'michael.chen@clinic.com',
-    phone: '+1 (555) 234-5678',
-    specialization: 'Stroke & Vascular Neurology',
+    name: 'Dr. Neha Verma',
+    role: 'Dentist',
+    department: 'Dental Care',
+    email: 'neha.verma@clinic.com',
+    phone: '+1 (555) 222-3344',
+    specialization: 'General & Cosmetic Dentistry',
   },
   {
     id: '3',
@@ -54,6 +63,15 @@ const employees: Employee[] = [
   },
   {
     id: '4',
+    name: 'Dr. Sarah Johnson',
+    role: 'Senior Physician',
+    department: 'Cardiology',
+    email: 'sarah.johnson@clinic.com',
+    phone: '+1 (555) 123-4567',
+    specialization: 'Interventional Cardiology',
+  },
+  {
+    id: '5',
     name: 'Dr. James Wilson',
     role: 'Orthopedic Surgeon',
     department: 'Orthopedics',
@@ -62,44 +80,81 @@ const employees: Employee[] = [
     specialization: 'Sports Medicine',
   },
   {
-    id: '5',
+    id: '6',
     name: 'Dr. Maria Garcia',
-    role: 'Cardiologist',
-    department: 'Cardiology',
+    role: 'Gynecologist',
+    department: 'Gynecology',
     email: 'maria.garcia@clinic.com',
     phone: '+1 (555) 567-8901',
-    specialization: 'Heart Failure',
+    specialization: "Women's Health",
+  },
+  {
+    id: '7',
+    name: 'Dr. Michael Chen',
+    role: 'ENT Specialist',
+    department: 'ENT',
+    email: 'michael.chen@clinic.com',
+    phone: '+1 (555) 234-5678',
+    specialization: 'Ear, Nose & Throat Surgery',
+  },
+  {
+    id: '8',
+    name: 'Dr. Ritu Malhotra',
+    role: 'Dermatologist',
+    department: 'Dermatology',
+    email: 'ritu.malhotra@clinic.com',
+    phone: '+1 (555) 678-9012',
+    specialization: 'Medical & Cosmetic Dermatology',
   },
 ];
 
-const departments = ['All Staff', 'Cardiology', 'Neurology', 'Pediatrics'];
+const departments = [
+  'All Staff',
+  'General Medicine',
+  'Dental Care',
+  'Pediatrics',
+  'Cardiology',
+  'Orthopedics',
+  'Gynecology',
+  'ENT',
+  'Dermatology',
+];
+
+const departmentIcons: Record<string, any> = {
+  'General Medicine': Stethoscope,
+  'Dental Care': Smile,
+  Pediatrics: Baby,
+  Cardiology: Heart,
+  Orthopedics: Activity,
+  Gynecology: Venus,
+  ENT: Ear,
+  Dermatology: Sparkles,
+};
+
+function getDepartmentIcon(dept: string) {
+  return departmentIcons[dept] || User;
+}
 
 export default function EmployeesPage() {
   const [selectedDepartment, setSelectedDepartment] = useState('All Staff');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredEmployees = employees.filter(emp => {
+  const filteredEmployees = employees.filter((emp) => {
     const matchesDept = selectedDepartment === 'All Staff' || emp.department === selectedDepartment;
-    const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          emp.role.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.role.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesDept && matchesSearch;
   });
-
-  const getDepartmentIcon = (dept: string) => {
-    switch (dept) {
-      case 'Cardiology': return Heart;
-      case 'Neurology': return Brain;
-      case 'Pediatrics': return Baby;
-      default: return User;
-    }
-  };
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-[#0A1628]">Staff Directory</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage your medical staff and their schedules</p>
+          <p className="text-gray-500 text-sm mt-1">
+            One doctor per department offered in the WhatsApp booking flow
+          </p>
         </div>
       </div>
 
@@ -111,31 +166,33 @@ export default function EmployeesPage() {
             placeholder="Search staff..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C] focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C] focus:border-transparent"
           />
         </div>
-        <div className="flex flex-wrap gap-2">
-          {departments.map((dept) => {
-            const isActive = selectedDepartment === dept;
-            const Icon = dept === 'All Staff' ? Users : getDepartmentIcon(dept);
-            return (
-              <button
-                key={dept}
-                onClick={() => setSelectedDepartment(dept)}
-                className={`
-                  px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 text-sm font-medium
-                  ${isActive 
-                    ? 'bg-[#0A1628] text-white shadow-lg' 
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-6">
+        {departments.map((dept) => {
+          const isActive = selectedDepartment === dept;
+          const Icon = dept === 'All Staff' ? Users : getDepartmentIcon(dept);
+          return (
+            <button
+              key={dept}
+              onClick={() => setSelectedDepartment(dept)}
+              className={`
+                px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 text-sm font-medium
+                ${
+                  isActive
+                    ? 'bg-[#0A1628] text-white shadow-lg'
                     : 'bg-white text-[#0A1628] border border-gray-200 hover:bg-gray-50'
-                  }
-                `}
-              >
-                <Icon size={16} />
-                {dept}
-              </button>
-            );
-          })}
-        </div>
+                }
+              `}
+            >
+              <Icon size={16} />
+              {dept}
+            </button>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -146,7 +203,7 @@ export default function EmployeesPage() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-[#0A1628] rounded-full flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
-                    {employee.name.split(' ').map(n => n[0]).join('')}
+                    {employee.name.split(' ').map((n) => n[0]).join('')}
                   </div>
                   <div>
                     <h3 className="font-semibold text-[#0A1628]">{employee.name}</h3>

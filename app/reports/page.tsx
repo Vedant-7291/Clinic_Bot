@@ -1,61 +1,74 @@
 'use client';
 
-import { 
-  FileText, 
-  Download, 
+import { useState } from 'react';
+import {
+  FileText,
+  Download,
   Calendar,
   Filter,
-  TrendingUp,
+  MessageCircle,
   Users,
-  DollarSign
+  ShieldCheck,
 } from 'lucide-react';
 
+// ============================================
+// Reports reflect what the WhatsApp bot actually produces: bookings,
+// department demand, and insurance coverage — plus the clinic's own
+// revenue report, which sits alongside booking data rather than inside it.
+// ============================================
 const reports = [
   {
     id: '1',
-    title: 'Monthly Revenue Report',
-    description: 'Detailed breakdown of revenue by department',
-    date: '2026-08-01',
-    type: 'Financial',
+    title: 'WhatsApp Booking Report',
+    description: 'Every appointment booked through the bot, with patient type and status',
+    date: '2026-08-29',
+    type: 'Bookings',
     downloads: 45,
     size: '2.4 MB',
   },
   {
     id: '2',
-    title: 'Patient Growth Analysis',
-    description: 'Monthly patient acquisition and retention metrics',
-    date: '2026-08-15',
-    type: 'Analytics',
+    title: 'Department Demand Report',
+    description: 'Which departments patients are requesting most via WhatsApp',
+    date: '2026-08-25',
+    type: 'Bookings',
     downloads: 32,
     size: '1.8 MB',
   },
   {
     id: '3',
-    title: 'Appointment Statistics',
-    description: 'Appointment trends and cancellation rates',
-    date: '2026-08-10',
-    type: 'Analytics',
+    title: 'Insurance Coverage Report',
+    description: 'Share of bookings made with vs. without insurance, by department',
+    date: '2026-08-22',
+    type: 'Insurance',
     downloads: 28,
-    size: '3.1 MB',
+    size: '1.1 MB',
   },
   {
     id: '4',
-    title: 'Department Performance',
-    description: 'Performance metrics by medical department',
-    date: '2026-08-05',
-    type: 'Performance',
+    title: 'Monthly Revenue Report',
+    description: 'Detailed breakdown of revenue by department',
+    date: '2026-08-01',
+    type: 'Financial',
     downloads: 19,
     size: '2.7 MB',
   },
 ];
 
+const reportTypes = ['All Types', 'Bookings', 'Insurance', 'Financial'];
+
 const quickStats = [
-  { label: 'Total Reports', value: 24, change: '+3' },
-  { label: 'Downloads', value: 124, change: '+12%' },
-  { label: 'Categories', value: 8, change: '+1' },
+  { label: 'Bookings via WhatsApp', value: 128, change: '+18%', icon: MessageCircle },
+  { label: 'New Patients (30d)', value: 34, change: '+9', icon: Users },
+  { label: 'Insured Bookings', value: '71%', change: '+4%', icon: ShieldCheck },
 ];
 
 export default function ReportsPage() {
+  const [typeFilter, setTypeFilter] = useState('All Types');
+
+  const filteredReports =
+    typeFilter === 'All Types' ? reports : reports.filter((r) => r.type === typeFilter);
+
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
@@ -70,30 +83,39 @@ export default function ReportsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        {quickStats.map((stat) => (
-          <div key={stat.label} className="card p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">{stat.label}</p>
-                <p className="text-2xl font-bold text-[#0A1628]">{stat.value}</p>
+        {quickStats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.label} className="card p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+                    <Icon size={14} />
+                    {stat.label}
+                  </div>
+                  <p className="text-2xl font-bold text-[#0A1628]">{stat.value}</p>
+                </div>
+                <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-lg h-fit">
+                  {stat.change}
+                </span>
               </div>
-              <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-lg">
-                {stat.change}
-              </span>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="card overflow-hidden">
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-2">
             <Filter size={18} className="text-gray-400" />
-            <select className="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]">
-              <option>All Types</option>
-              <option>Financial</option>
-              <option>Analytics</option>
-              <option>Performance</option>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+            >
+              {reportTypes.map((t) => (
+                <option key={t}>{t}</option>
+              ))}
             </select>
             <div className="flex items-center gap-2">
               <Calendar size={18} className="text-gray-400" />
@@ -124,7 +146,7 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>
-              {reports.map((report) => (
+              {filteredReports.map((report) => (
                 <tr key={report.id} className="hover:bg-gray-50 transition-colors">
                   <td className="table-cell">
                     <div>
@@ -148,6 +170,13 @@ export default function ReportsPage() {
                   </td>
                 </tr>
               ))}
+              {filteredReports.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="text-center py-12 text-gray-500">
+                    No reports under {typeFilter}.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
