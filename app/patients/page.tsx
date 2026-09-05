@@ -394,14 +394,12 @@ export default function PricePage() {
             <table className="w-full">
               <thead className="bg-[#0A1628] text-white">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">#</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Patient Name</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold w-16">#</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold w-[200px]">Patient Name</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold">Service</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Department</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Date</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Time</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Amount</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Status</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold w-[120px]">Date</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold w-[110px]">Time</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold w-[130px]">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -410,22 +408,20 @@ export default function PricePage() {
                     <td className="px-4 py-3 text-sm text-gray-500">{index + 1}</td>
                     <td className="px-4 py-3 text-sm font-medium text-[#0A1628]">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-[#0A1628] text-white rounded-full flex items-center justify-center text-xs font-semibold">
+                        <div className="w-8 h-8 bg-[#0A1628] text-white rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0">
                           {patient.name.split(' ').map(n => n[0]).join('')}
                         </div>
-                        {patient.name}
+                        <span className="truncate">{patient.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{patient.service}</td>
-                    <td className="px-4 py-3 text-sm">
-                      <span className="px-2 py-1 text-xs bg-blue-50 text-[#1A3A5C] rounded-lg">
-                        {patient.category}
-                      </span>
+                    <td className="px-4 py-3 text-sm text-gray-700 truncate max-w-[200px]">
+                      {patient.service}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{patient.date}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{patient.time}</td>
-                    <td className="px-4 py-3 text-sm font-semibold text-[#0A1628]">
-                      ${patient.price}
+                    <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                      {patient.date}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                      {patient.time}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">

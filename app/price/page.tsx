@@ -12,7 +12,10 @@ import {
   Sparkles,
   Venus,
   TrendingUp,
+  Check,
+  X,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 // ============================================
 // Services map 1:1 onto the department list the WhatsApp bot offers
@@ -25,10 +28,10 @@ interface Service {
   description: string;
   price: number;
   category: string;
-  icon: any;
+  icon: LucideIcon;
 }
 
-const services: Service[] = [
+const initialServices: Service[] = [
   {
     id: '1',
     name: 'General Medicine Consultation',
@@ -109,9 +112,43 @@ const categories = [
 
 export default function PricePage() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [services, setServices] = useState<Service[]>(initialServices);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editPrice, setEditPrice] = useState<string>('');
 
   const filteredServices =
     activeCategory === 'All' ? services : services.filter((s) => s.category === activeCategory);
+
+  const handleEditClick = (service: Service) => {
+    setEditingId(service.id);
+    setEditPrice(service.price.toString());
+  };
+
+  const handleSavePrice = (id: string) => {
+    const newPrice = parseFloat(editPrice);
+    if (!isNaN(newPrice) && newPrice >= 0) {
+      setServices(services.map(service =>
+        service.id === id ? { ...service, price: newPrice } : service
+      ));
+      setEditingId(null);
+      setEditPrice('');
+    } else {
+      alert('Please enter a valid price (positive number)');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditPrice('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, id: string) => {
+    if (e.key === 'Enter') {
+      handleSavePrice(id);
+    } else if (e.key === 'Escape') {
+      handleCancelEdit();
+    }
+  };
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
@@ -141,6 +178,8 @@ export default function PricePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredServices.map((service) => {
           const Icon = service.icon;
+          const isEditing = editingId === service.id;
+
           return (
             <div key={service.id} className="card p-6 hover:shadow-lg transition-all duration-300">
               <div className="flex items-start justify-between mb-4">
@@ -158,12 +197,50 @@ export default function PricePage() {
               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <div>
                   <p className="text-xs text-gray-500">Starting at</p>
-                  <p className="text-2xl font-bold text-[#0A1628]">${service.price}</p>
+                  {isEditing ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-500">₹</span>
+                      <input
+                        type="number"
+                        value={editPrice}
+                        onChange={(e) => setEditPrice(e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(e, service.id)}
+                        className="w-24 px-2 py-1 text-2xl font-bold text-[#0A1628] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A1628] focus:border-transparent"
+                        min="0"
+                        step="0.01"
+                        autoFocus
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-2xl font-bold text-[#0A1628]">₹{service.price}</p>
+                  )}
                 </div>
-                <button className="btn-primary text-sm flex items-center gap-2">
-                  <TrendingUp size={16} />
-                  Book Now
-                </button>
+                {isEditing ? (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleSavePrice(service.id)}
+                      className="btn-primary text-sm flex items-center gap-1 px-3 py-2"
+                    >
+                      <Check size={16} />
+                      Save
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm flex items-center gap-1 px-3 py-2 rounded-lg transition-colors"
+                    >
+                      <X size={16} />
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleEditClick(service)}
+                    className="bg-blue-50 text-[#1A3A5C] hover:bg-blue-100 text-sm flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium"
+                  >
+                    <TrendingUp size={16} />
+                    Change Pricing
+                  </button>
+                )}
               </div>
             </div>
           );
