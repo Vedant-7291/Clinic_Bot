@@ -17,7 +17,7 @@ import {
 import { useState } from 'react';
 
 const navItems = [
-  { icon: BarChart3, label: 'Statistics', href: '/statistics' },
+  { icon: BarChart3, label: 'Statistics', href: '/' },
   { icon: Users, label: 'Employees', href: '/employees' },
   { icon: UserPlus, label: 'Patients', href: '/patients' },
   { icon: CalendarCheck, label: 'Scheduled Visits', href: '/visits' },
