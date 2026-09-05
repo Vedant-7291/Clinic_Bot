@@ -17,11 +17,10 @@ import {
 import { useState } from 'react';
 
 const navItems = [
-  { icon: CalendarDays, label: 'Schedule', href: '/' },
+  { icon: BarChart3, label: 'Statistics', href: '/statistics' },
   { icon: Users, label: 'Employees', href: '/employees' },
   { icon: UserPlus, label: 'Patients', href: '/patients' },
   { icon: CalendarCheck, label: 'Scheduled Visits', href: '/visits' },
-  { icon: BarChart3, label: 'Statistics', href: '/statistics' },
   { icon: FileText, label: 'Reports', href: '/reports' },
   { icon: DollarSign, label: 'Price', href: '/price' },
 ];
