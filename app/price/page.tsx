@@ -235,7 +235,7 @@ export default function PricePage() {
                 ) : (
                   <button
                     onClick={() => handleEditClick(service)}
-                    className="bg-blue-50 text-[#1A3A5C] hover:bg-blue-100 text-sm flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium"
+                    className="bg-black text-[#fdfdfd] hover:bg-blue-600 text-sm flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium"
                   >
                     <TrendingUp size={16} />
                     Change Pricing

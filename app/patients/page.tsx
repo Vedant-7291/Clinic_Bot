@@ -1,36 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  Stethoscope,
-  Heart,
-  Baby,
-  Activity,
-  Smile,
-  Ear,
-  Sparkles,
-  Venus,
-  TrendingUp,
   Filter,
   CheckCircle,
   Clock,
   User,
-  Calendar,
   Search,
+  Loader2,
 } from 'lucide-react';
+import { SERVICE_CATALOG } from '@/lib/departments';
 
 // ============================================
-// Services map 1:1 onto the department list the WhatsApp bot offers
-// (see DEPARTMENTS in the booking webhook). "Other / Not sure" isn't
-// a billable service, so it's excluded here.
+// Services still mirror the department list the WhatsApp bot offers.
+// Patients, however, now come straight from MongoDB via /api/appointments
+// (populated by the WhatsApp webhook and/or manual entries) instead of a
+// hardcoded array.
 // ============================================
-interface Service {
-  id: string;
-  name: string;
-  description: string;
+interface Appointment {
+  _id: string;
+  patientName: string;
+  department: string;
+  preferredDate: string;
+  preferredTime: string;
+  status: 'Confirmed' | 'Completed' | 'Cancelled';
   price: number;
-  category: string;
-
 }
 
 interface Patient {
@@ -44,190 +38,76 @@ interface Patient {
   price: number;
 }
 
-const services: Service[] = [
-  {
-    id: '1',
-    name: 'General Medicine Consultation',
-    description: 'Standard consultation with a general physician',
-    price: 150,
-    category: 'General Medicine',
-  },
-  {
-    id: '2',
-    name: 'Dental Checkup & Cleaning',
-    description: 'Routine oral exam, cleaning, and cavity check',
-    price: 120,
-    category: 'Dental Care',
-  },
-  {
-    id: '3',
-    name: 'Pediatric Visit',
-    description: "Children's health examination and consultation",
-    price: 180,
-    category: 'Pediatrics',
-  },
-  {
-    id: '4',
-    name: 'Cardiology Checkup',
-    description: 'Comprehensive heart health evaluation',
-    price: 350,
-    category: 'Cardiology',
-  },
-  {
-    id: '5',
-    name: 'Orthopedic Consultation',
-    description: 'Musculoskeletal system evaluation',
-    price: 300,
-    category: 'Orthopedics',
-  },
-  {
-    id: '6',
-    name: 'Gynecology Consultation',
-    description: "Women's health exam and consultation",
-    price: 220,
-    category: 'Gynecology',
-  },
-  {
-    id: '7',
-    name: 'ENT Consultation',
-    description: 'Ear, nose, and throat evaluation',
-    price: 200,
-    category: 'ENT',
-  },
-  {
-    id: '8',
-    name: 'Dermatology Consultation',
-    description: 'Skin, hair, and nail health assessment',
-    price: 250,
-    category: 'Dermatology',
-  },
-];
+const categories = ['All', ...SERVICE_CATALOG.map((s) => s.category)];
 
-// Sample patient data
-const initialPatients: Patient[] = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    service: 'General Medicine Consultation',
-    category: 'General Medicine',
-    date: '2026-09-05',
-    time: '09:30 AM',
-    status: 'attended',
-    price: 150,
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    service: 'Dental Checkup & Cleaning',
-    category: 'Dental Care',
-    date: '2026-09-05',
-    time: '10:15 AM',
-    status: 'pending',
-    price: 120,
-  },
-  {
-    id: '3',
-    name: 'Emily Rodriguez',
-    service: 'Pediatric Visit',
-    category: 'Pediatrics',
-    date: '2026-09-05',
-    time: '11:00 AM',
-    status: 'attended',
-    price: 180,
-  },
-  {
-    id: '4',
-    name: 'David Kim',
-    service: 'Cardiology Checkup',
-    category: 'Cardiology',
-    date: '2026-09-05',
-    time: '01:30 PM',
-    status: 'pending',
-    price: 350,
-  },
-  {
-    id: '5',
-    name: 'Lisa Thompson',
-    service: 'Orthopedic Consultation',
-    category: 'Orthopedics',
-    date: '2026-09-06',
-    time: '09:00 AM',
-    status: 'pending',
-    price: 300,
-  },
-  {
-    id: '6',
-    name: 'James Wilson',
-    service: 'Gynecology Consultation',
-    category: 'Gynecology',
-    date: '2026-09-06',
-    time: '10:45 AM',
-    status: 'attended',
-    price: 220,
-  },
-  {
-    id: '7',
-    name: 'Maria Garcia',
-    service: 'ENT Consultation',
-    category: 'ENT',
-    date: '2026-09-06',
-    time: '02:00 PM',
-    status: 'attended',
-    price: 200,
-  },
-  {
-    id: '8',
-    name: 'Robert Taylor',
-    service: 'Dermatology Consultation',
-    category: 'Dermatology',
-    date: '2026-09-07',
-    time: '09:30 AM',
-    status: 'pending',
-    price: 250,
-  },
-];
-
-const categories = [
-  'All',
-  'General Medicine',
-  'Dental Care',
-  'Pediatrics',
-  'Cardiology',
-  'Orthopedics',
-  'Gynecology',
-  'ENT',
-  'Dermatology',
-];
+function toPatient(a: Appointment): Patient {
+  const service = SERVICE_CATALOG.find((s) => s.category === a.department);
+  return {
+    id: a._id,
+    name: a.patientName,
+    service: service?.name ?? `${a.department} Consultation`,
+    category: a.department,
+    date: a.preferredDate,
+    time: a.preferredTime,
+    // "Cancelled" appointments are treated as pending until removed/rebooked,
+    // since there's no separate "attended" concept in the booking flow.
+    status: a.status === 'Completed' ? 'attended' : 'pending',
+    price: a.price ?? service?.price ?? 0,
+  };
+}
 
 export default function PricePage() {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [patients, setPatients] = useState<Patient[]>(initialPatients);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'attended' | 'pending'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
-  const filteredServices =
-    activeCategory === 'All' ? services : services.filter((s) => s.category === activeCategory);
+  useEffect(() => {
+    let cancelled = false;
 
-  // Filter patients based on status and search
+    async function loadPatients() {
+      try {
+        setIsLoading(true);
+        const res = await fetch('/api/appointments', { cache: 'no-store' });
+        if (!res.ok) throw new Error('Failed to load patients');
+        const data: Appointment[] = await res.json();
+        if (!cancelled) setPatients(data.map(toPatient));
+      } catch (err) {
+        if (!cancelled) setError('Could not load patients. Please try again.');
+        console.error(err);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    loadPatients();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const filteredPatients = patients.filter((patient) => {
     const matchesStatus = statusFilter === 'all' || patient.status === statusFilter;
-    const matchesSearch = patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         patient.service.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         patient.category.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
+    const matchesCategory = activeCategory === 'All' || patient.category === activeCategory;
+    const matchesSearch =
+      patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient.service.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesCategory && matchesSearch;
   });
 
-  const getStatusIcon = (status: string) => {
-    return status === 'attended' ? (
+  const getStatusIcon = (status: string) =>
+    status === 'attended' ? (
       <CheckCircle className="w-4 h-4 text-green-500" />
     ) : (
       <Clock className="w-4 h-4 text-yellow-500" />
     );
-  };
 
-  const getStatusBadge = (status: string) => {
-    return status === 'attended' ? (
+  const getStatusBadge = (status: string) =>
+    status === 'attended' ? (
       <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
         Attended
       </span>
@@ -236,16 +116,13 @@ export default function PricePage() {
         Pending
       </span>
     );
-  };
 
-  // Statistics
   const totalPatients = patients.length;
-  const attendedCount = patients.filter(p => p.status === 'attended').length;
-  const pendingCount = patients.filter(p => p.status === 'pending').length;
+  const attendedCount = patients.filter((p) => p.status === 'attended').length;
+  const pendingCount = patients.filter((p) => p.status === 'pending').length;
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl lg:text-3xl font-bold text-[#0A1628]">Patient Management</h1>
         <p className="text-gray-500 text-sm mt-1">
@@ -253,7 +130,10 @@ export default function PricePage() {
         </p>
       </div>
 
-      {/* Statistics Cards */}
+      {error && (
+        <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{error}</div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="card p-4 bg-[#0A1628] text-white">
           <div className="flex items-center justify-between">
@@ -290,7 +170,6 @@ export default function PricePage() {
         </div>
       </div>
 
-      {/* Department Filters */}
       <div className="flex flex-wrap gap-2 mb-6">
         {categories.map((category) => (
           <button
@@ -307,15 +186,11 @@ export default function PricePage() {
         ))}
       </div>
 
-      {/* Services Grid */}
-
-      {/* Patient Table Section */}
       <div className="mt-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-[#0A1628]">Patient Appointments</h2>
-          
+
           <div className="flex items-center gap-3">
-            {/* Search Bar */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -327,7 +202,6 @@ export default function PricePage() {
               />
             </div>
 
-            {/* Filter Button with Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setShowFilterDropdown(!showFilterDropdown)}
@@ -387,56 +261,67 @@ export default function PricePage() {
           </div>
         </div>
 
-        {/* Patient Table */}
         <div className="card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-[#0A1628] text-white">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold w-16">#</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold w-[200px]">Patient Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Service</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold w-[120px]">Date</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold w-[110px]">Time</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold w-[130px]">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filteredPatients.map((patient, index) => (
-                  <tr key={patient.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-sm text-gray-500">{index + 1}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-[#0A1628]">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-[#0A1628] text-white rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                          {patient.name.split(' ').map(n => n[0]).join('')}
-                        </div>
-                        <span className="truncate">{patient.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-700 truncate max-w-[200px]">
-                      {patient.service}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
-                      {patient.date}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
-                      {patient.time}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(patient.status)}
-                        {getStatusBadge(patient.status)}
-                      </div>
-                    </td>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16 text-gray-500 gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Loading patients...
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-[#0A1628] text-white">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold w-16">#</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold w-[200px]">
+                      Patient Name
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold">Service</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold w-[120px]">Date</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold w-[110px]">Time</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold w-[130px]">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filteredPatients.map((patient, index) => (
+                    <tr key={patient.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm text-gray-500">{index + 1}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-[#0A1628]">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-[#0A1628] text-white rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                            {patient.name
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')}
+                          </div>
+                          <span className="truncate">{patient.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-700 truncate max-w-[200px]">
+                        {patient.service}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                        {patient.date}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                        {patient.time}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(patient.status)}
+                          {getStatusBadge(patient.status)}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-          {filteredPatients.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              No patients found with the current filters.
+              {filteredPatients.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No patients found with the current filters.
+                </div>
+              )}
             </div>
           )}
         </div>
