@@ -14,6 +14,8 @@ import {
   TrendingUp,
   Check,
   X,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -110,11 +112,32 @@ const categories = [
   'Dermatology',
 ];
 
+const iconMap: Record<string, LucideIcon> = {
+  'General Medicine': Stethoscope,
+  'Dental Care': Smile,
+  Pediatrics: Baby,
+  Cardiology: Heart,
+  Orthopedics: Activity,
+  Gynecology: Venus,
+  ENT: Ear,
+  Dermatology: Sparkles,
+};
+
 export default function PricePage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [services, setServices] = useState<Service[]>(initialServices);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editPrice, setEditPrice] = useState<string>('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newService, setNewService] = useState<Partial<Service>>({
+    name: '',
+    description: '',
+    price: 0,
+    category: categories[0],
+    icon: Stethoscope,
+  });
 
   const filteredServices =
     activeCategory === 'All' ? services : services.filter((s) => s.category === activeCategory);
@@ -150,13 +173,64 @@ export default function PricePage() {
     }
   };
 
+  const handleDeleteClick = (service: Service) => {
+    setServiceToDelete(service);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (serviceToDelete) {
+      setServices(services.filter((s) => s.id !== serviceToDelete.id));
+      setShowDeleteModal(false);
+      setServiceToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setServiceToDelete(null);
+  };
+
+  const handleAddService = () => {
+    if (newService.name && newService.description && newService.price && newService.category) {
+      const service: Service = {
+        id: Date.now().toString(),
+        name: newService.name,
+        description: newService.description,
+        price: newService.price,
+        category: newService.category,
+        icon: iconMap[newService.category] || Stethoscope,
+      };
+      setServices([...services, service]);
+      setShowAddModal(false);
+      setNewService({
+        name: '',
+        description: '',
+        price: 0,
+        category: categories[0],
+        icon: Stethoscope,
+      });
+    } else {
+      alert('Please fill in all required fields (Name, Description, Price, Category)');
+    }
+  };
+
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl lg:text-3xl font-bold text-[#0A1628]">Pricing</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Service prices by department — matches the options patients see when booking on WhatsApp
-        </p>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-[#0A1628]">Pricing</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Service prices by department — matches the options patients see when booking on WhatsApp
+          </p>
+        </div>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="mt-4 lg:mt-0 btn-primary flex items-center gap-2"
+        >
+          <Plus size={18} />
+          Add Pricing
+        </button>
       </div>
 
       <div className="flex flex-wrap gap-2 mb-6">
@@ -242,6 +316,16 @@ export default function PricePage() {
                   </button>
                 )}
               </div>
+
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <button
+                  onClick={() => handleDeleteClick(service)}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <Trash2 size={14} />
+                  Delete Service
+                </button>
+              </div>
             </div>
           );
         })}
@@ -268,6 +352,131 @@ export default function PricePage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-[#0A1628]">Confirm Delete</h3>
+              <button
+                onClick={cancelDelete}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="mb-6">
+              <p className="text-gray-700">
+                Are you sure you want to delete <span className="font-semibold">{serviceToDelete?.name}</span>?
+              </p>
+              <p className="text-sm text-gray-500 mt-1">This action cannot be undone.</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={cancelDelete}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                No
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Pricing Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-[#0A1628]">Add New Service</h3>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Service Name *</label>
+                <input
+                  type="text"
+                  value={newService.name}
+                  onChange={(e) => setNewService({ ...newService, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                  placeholder="e.g., General Medicine Consultation"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                <textarea
+                  value={newService.description}
+                  onChange={(e) => setNewService({ ...newService, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                  placeholder="Brief description of the service"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
+                <input
+                  type="number"
+                  value={newService.price || ''}
+                  onChange={(e) => setNewService({ ...newService, price: parseFloat(e.target.value) || 0 })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                <select
+                  value={newService.category}
+                  onChange={(e) => {
+                    const category = e.target.value;
+                    setNewService({ 
+                      ...newService, 
+                      category,
+                      icon: iconMap[category] || Stethoscope
+                    });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                >
+                  {categories.filter(c => c !== 'All').map((category) => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="text-sm text-gray-500">
+                <p>* Required fields</p>
+                <p className="mt-1">The icon will be automatically assigned based on the selected category.</p>
+              </div>
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddService}
+                className="flex-1 px-4 py-2 bg-[#0A1628] hover:bg-[#1A3A5C] text-white rounded-lg transition-colors"
+              >
+                Add Service
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
