@@ -23,6 +23,7 @@ const navItems = [
   { icon: CalendarCheck, label: 'Scheduled Visits', href: '/visits' },
   { icon: FileText, label: 'Reports', href: '/reports' },
   { icon: DollarSign, label: 'Price', href: '/price' },
+  { icon: FileText, label: 'Inventory', href: '/inventory' },
 ];
 
 export default function Sidebar() {
