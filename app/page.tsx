@@ -5,7 +5,7 @@ import {
   Users, 
   CalendarCheck, 
   XCircle,
-  DollarSign,
+  IndianRupee,
   Activity,
   PieChart as PieChartIcon
 } from 'lucide-react';
@@ -45,9 +45,9 @@ const COLORS = ['#1A3A5C', '#2A5A8C', '#3B82F6', '#60A5FA', '#93C5FD'];
 const statsCards = [
   {
     title: 'Total Revenue',
-    value: '$264,000',
+    value: '₹264,000',
     change: '+12.5%',
-    icon: DollarSign,
+    icon: IndianRupee,
     color: 'bg-blue-50 text-blue-600',
   },
   {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import {
-  DollarSign,
+  IndianRupee,
   Stethoscope,
   Heart,
   Baby,
@@ -256,7 +256,7 @@ export default function PricePage() {
       <div className="mt-8 card p-6 bg-[#0A1628] text-white">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 bg-[#1A3A5C] rounded-lg flex items-center justify-center flex-shrink-0">
-            <DollarSign size={24} className="text-[#3B82F6]" />
+            <IndianRupee size={24} className="text-[#3B82F6]" />
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-1">Insurance Information</h3>

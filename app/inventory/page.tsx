@@ -17,7 +17,7 @@ import {
   TrendingDown,
   Box,
   Tag,
-  DollarSign,
+  IndianRupee,
   Calendar,
   Filter,
   X,
@@ -272,15 +272,242 @@ const inventoryData: InventoryItem[] = [
     lastUpdated: '2026-01-15T10:00:00Z',
     createdAt: '2024-12-01T08:00:00Z',
   },
+  {
+    id: '13',
+    name: 'Loratadine 10mg',
+    category: 'Medications',
+    description: 'Antihistamine allergy relief tablets',
+    sku: 'MED-013',
+    quantity: 120,
+    unit: 'Tablets',
+    minStock: 30,
+    maxStock: 200,
+    costPrice: 1.20,
+    sellingPrice: 3.00,
+    location: 'Pharmacy Aisle 2',
+    supplier: 'PharmaPlus Wholesalers',
+    expiryDate: '2028-02-15',
+    status: 'In Stock',
+    lastUpdated: '2026-09-02T10:00:00Z',
+    createdAt: '2025-10-15T09:00:00Z',
+  },
+  {
+    id: '14',
+    name: 'IV Cannula 18G',
+    category: 'Medical Supplies',
+    description: 'Intravenous cannula, box of 50',
+    sku: 'SUP-014',
+    quantity: 18,
+    unit: 'Boxes',
+    minStock: 25,
+    maxStock: 80,
+    costPrice: 22.00,
+    sellingPrice: 45.00,
+    location: 'Storage Room B',
+    supplier: 'SafeCare Supplies',
+    expiryDate: '2027-11-30',
+    status: 'Low Stock',
+    lastUpdated: '2026-08-29T14:30:00Z',
+    createdAt: '2025-11-20T10:00:00Z',
+  },
+  {
+    id: '15',
+    name: 'ECG Electrodes',
+    category: 'Medical Supplies',
+    description: 'Disposable ECG electrodes, pack of 100',
+    sku: 'SUP-015',
+    quantity: 60,
+    unit: 'Packs',
+    minStock: 20,
+    maxStock: 100,
+    costPrice: 8.00,
+    sellingPrice: 18.00,
+    location: 'Storage Room A',
+    supplier: 'MediPharm Distributors',
+    expiryDate: '2028-03-15',
+    status: 'In Stock',
+    lastUpdated: '2026-09-03T11:00:00Z',
+    createdAt: '2025-12-01T09:30:00Z',
+  },
+  {
+    id: '16',
+    name: 'Salbutamol Inhaler',
+    category: 'Medications',
+    description: 'Asthma relief inhaler, 200 doses',
+    sku: 'MED-016',
+    quantity: 0,
+    unit: 'Units',
+    minStock: 10,
+    maxStock: 40,
+    costPrice: 14.00,
+    sellingPrice: 30.00,
+    location: 'Pharmacy Aisle 1',
+    supplier: 'PharmaPlus Wholesalers',
+    expiryDate: '2027-08-31',
+    status: 'Out of Stock',
+    lastUpdated: '2026-09-01T08:00:00Z',
+    createdAt: '2025-12-15T11:00:00Z',
+  },
+  {
+    id: '17',
+    name: 'Cetirizine 10mg',
+    category: 'Medications',
+    description: 'Antihistamine for allergy relief',
+    sku: 'MED-017',
+    quantity: 85,
+    unit: 'Tablets',
+    minStock: 25,
+    maxStock: 150,
+    costPrice: 0.90,
+    sellingPrice: 2.50,
+    location: 'Pharmacy Aisle 2',
+    supplier: 'PharmaPlus Wholesalers',
+    expiryDate: '2028-04-30',
+    status: 'In Stock',
+    lastUpdated: '2026-09-04T11:00:00Z',
+    createdAt: '2026-01-10T09:00:00Z',
+  },
+  {
+    id: '18',
+    name: 'Surgical Scissors',
+    category: 'Equipment',
+    description: 'Stainless steel surgical scissors, 5.5"',
+    sku: 'EQP-018',
+    quantity: 22,
+    unit: 'Units',
+    minStock: 8,
+    maxStock: 30,
+    costPrice: 35.00,
+    sellingPrice: 75.00,
+    location: 'Equipment Room',
+    supplier: 'MedTech Solutions',
+    lastUpdated: '2026-09-02T15:00:00Z',
+    createdAt: '2026-01-20T10:30:00Z',
+    status: 'In Stock',
+  },
+  {
+    id: '19',
+    name: 'N95 Respirator Masks',
+    category: 'Medical Supplies',
+    description: 'N95 filtering facepiece respirators, box of 20',
+    sku: 'SUP-019',
+    quantity: 45,
+    unit: 'Boxes',
+    minStock: 30,
+    maxStock: 100,
+    costPrice: 25.00,
+    sellingPrice: 55.00,
+    location: 'Storage Room A',
+    supplier: 'SafeCare Supplies',
+    expiryDate: '2028-01-31',
+    status: 'In Stock',
+    lastUpdated: '2026-09-03T09:30:00Z',
+    createdAt: '2026-02-01T11:00:00Z',
+  },
+  {
+    id: '20',
+    name: 'Omeprazole 20mg',
+    category: 'Medications',
+    description: 'Proton pump inhibitor for acid reflux',
+    sku: 'MED-020',
+    quantity: 150,
+    unit: 'Capsules',
+    minStock: 40,
+    maxStock: 200,
+    costPrice: 0.60,
+    sellingPrice: 1.80,
+    location: 'Pharmacy Aisle 3',
+    supplier: 'MediPharm Distributors',
+    expiryDate: '2028-05-15',
+    status: 'In Stock',
+    lastUpdated: '2026-09-04T08:00:00Z',
+    createdAt: '2026-02-15T09:00:00Z',
+  },
+  {
+    id: '21',
+    name: 'Thermometer (Digital)',
+    category: 'Equipment',
+    description: 'Digital infrared forehead thermometer',
+    sku: 'EQP-021',
+    quantity: 7,
+    unit: 'Units',
+    minStock: 5,
+    maxStock: 20,
+    costPrice: 30.00,
+    sellingPrice: 65.00,
+    location: 'Equipment Room',
+    supplier: 'MedTech Solutions',
+    lastUpdated: '2026-08-31T16:00:00Z',
+    createdAt: '2026-03-01T08:30:00Z',
+    status: 'In Stock',
+  },
+  {
+    id: '22',
+    name: 'Sterile Gauze Pads',
+    category: 'Medical Supplies',
+    description: '4x4 sterile gauze pads, pack of 100',
+    sku: 'SUP-022',
+    quantity: 35,
+    unit: 'Packs',
+    minStock: 20,
+    maxStock: 80,
+    costPrice: 7.00,
+    sellingPrice: 16.00,
+    location: 'Storage Room B',
+    supplier: 'SafeCare Supplies',
+    expiryDate: '2028-06-30',
+    status: 'Low Stock',
+    lastUpdated: '2026-08-28T11:30:00Z',
+    createdAt: '2026-03-15T10:00:00Z',
+  },
+  {
+    id: '23',
+    name: 'Metformin 500mg',
+    category: 'Medications',
+    description: 'Antidiabetic medication for type 2 diabetes',
+    sku: 'MED-023',
+    quantity: 90,
+    unit: 'Tablets',
+    minStock: 30,
+    maxStock: 120,
+    costPrice: 0.45,
+    sellingPrice: 1.20,
+    location: 'Pharmacy Aisle 1',
+    supplier: 'PharmaPlus Wholesalers',
+    expiryDate: '2028-02-28',
+    status: 'In Stock',
+    lastUpdated: '2026-09-01T14:00:00Z',
+    createdAt: '2026-04-01T09:00:00Z',
+  },
+  {
+    id: '24',
+    name: 'Wheelchair (Standard)',
+    category: 'Equipment',
+    description: 'Standard manual wheelchair with footrests',
+    sku: 'EQP-024',
+    quantity: 3,
+    unit: 'Units',
+    minStock: 2,
+    maxStock: 8,
+    costPrice: 180.00,
+    sellingPrice: 350.00,
+    location: 'Equipment Room',
+    supplier: 'MedTech Solutions',
+    lastUpdated: '2026-08-30T10:00:00Z',
+    createdAt: '2026-04-15T08:00:00Z',
+    status: 'In Stock',
+  },
 ];
 
 // ============================================
 // Helper Functions
 // ============================================
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
 }
 
@@ -333,7 +560,7 @@ export default function InventoryPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const itemsPerPage = 6;
+  const itemsPerPage = 9; // 3 rows of 3 cards each
 
   // Get unique categories
   const categories = ['All', ...new Set(inventoryData.map(item => item.category))];
@@ -373,50 +600,50 @@ export default function InventoryPage() {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-4 lg:p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-5">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-[#0A1628]">Inventory Management</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 text-sm mt-0.5">
             Track and manage all medical supplies, medications, and equipment
           </p>
         </div>
-        <button className="mt-3 lg:mt-0 bg-[#0A1628] text-white px-4 py-2 rounded-lg hover:bg-[#1A3A5C] transition-colors inline-flex items-center gap-2 text-sm font-medium">
-          <Plus size={18} /> Add Item
+        <button className="mt-3 lg:mt-0 bg-[#0A1628] text-white px-5 py-2.5 rounded-lg hover:bg-[#1A3A5C] transition-colors inline-flex items-center gap-2 text-sm font-medium">
+          <Plus size={20} /> Add Item
         </button>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="card p-4">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-medium mb-1">
-            <Package size={14} /> Total Items
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+        <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+          <div className="flex items-center gap-2 text-gray-500 text-sm font-medium mb-1">
+            <Package size={16} /> Total Items
           </div>
           <p className="text-2xl font-bold text-[#0A1628]">{totalItems}</p>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-medium mb-1">
-            <DollarSign size={14} /> Total Value
+        <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+          <div className="flex items-center gap-2 text-gray-500 text-sm font-medium mb-1">
+            <IndianRupee size={16} /> Total Value
           </div>
           <p className="text-2xl font-bold text-[#0A1628]">{formatCurrency(totalValue)}</p>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-medium mb-1">
-            <TrendingDown size={14} /> Low Stock
+        <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+          <div className="flex items-center gap-2 text-gray-500 text-sm font-medium mb-1">
+            <TrendingDown size={16} /> Low Stock
           </div>
           <p className="text-2xl font-bold text-yellow-600">{lowStockItems}</p>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-medium mb-1">
-            <AlertCircle size={14} /> Critical
+        <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+          <div className="flex items-center gap-2 text-gray-500 text-sm font-medium mb-1">
+            <AlertCircle size={16} /> Critical
           </div>
           <p className="text-2xl font-bold text-red-600">{outOfStockItems + expiredItems}</p>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           <input
@@ -427,7 +654,7 @@ export default function InventoryPage() {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C] focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C] focus:border-transparent"
           />
         </div>
         
@@ -444,7 +671,7 @@ export default function InventoryPage() {
           <select
             value={categoryFilter}
             onChange={(e) => handleFilterChange('category', e.target.value)}
-            className="px-3 py-2.5 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#1A3A5C] text-sm"
+            className="px-4 py-2.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
           >
             {categories.map(cat => (
               <option key={cat} value={cat}>{cat}</option>
@@ -453,7 +680,7 @@ export default function InventoryPage() {
           <select
             value={statusFilter}
             onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="px-3 py-2.5 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#1A3A5C] text-sm"
+            className="px-4 py-2.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
           >
             {statuses.map(status => (
               <option key={status} value={status}>{status}</option>
@@ -466,7 +693,7 @@ export default function InventoryPage() {
                 setStatusFilter('All');
                 setCurrentPage(1);
               }}
-              className="px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium inline-flex items-center gap-1 transition-colors"
+              className="px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium inline-flex items-center gap-1 transition-colors"
             >
               <X size={16} /> Clear
             </button>
@@ -522,50 +749,44 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* Inventory Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Inventory Grid - 3 columns with larger cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {paginatedItems.map((item) => {
           const stockHealth = getStockHealth(item);
           return (
-            <div key={item.id} className="card p-5 hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-[#0A1628]/5 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Box size={20} className="text-[#0A1628]" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-[#0A1628] truncate">{item.name}</h3>
-                      <p className="text-xs text-gray-400 font-mono">{item.sku}</p>
-                    </div>
+            <div key={item.id} className="bg-white rounded-lg border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="w-10 h-10 bg-[#0A1628]/5 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Box size={20} className="text-[#0A1628]" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-[#0A1628] text-base truncate">{item.name}</h3>
+                    <p className="text-xs text-gray-400 font-mono">{item.sku}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${getStatusColor(item.status)}`}>
-                    {getStatusIcon(item.status)}
-                    {item.status}
-                  </span>
-                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 whitespace-nowrap ${getStatusColor(item.status)}`}>
+                  {getStatusIcon(item.status)}
+                  {item.status}
+                </span>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div className="mt-3 grid grid-cols-4 gap-2 text-sm">
                 <div>
-                  <p className="text-xs text-gray-400">Category</p>
-                  <p className="font-medium text-[#0A1628]">{item.category}</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider">Qty</p>
+                  <p className="font-medium text-[#0A1628]">{item.quantity} {item.unit}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Quantity</p>
-                  <p className="font-medium text-[#0A1628]">
-                    {item.quantity} {item.unit}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Cost Price</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider">Cost</p>
                   <p className="font-medium text-[#0A1628]">{formatCurrency(item.costPrice)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Selling Price</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider">Sell</p>
                   <p className="font-medium text-[#0A1628]">{formatCurrency(item.sellingPrice)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider">Min</p>
+                  <p className="font-medium text-[#0A1628]">{item.minStock}</p>
                 </div>
               </div>
 
@@ -584,21 +805,15 @@ export default function InventoryPage() {
                     style={{ width: `${stockHealth}%` }}
                   />
                 </div>
-                <div className="flex justify-between text-xs text-gray-400 mt-0.5">
-                  <span>Min: {item.minStock}</span>
-                  <span>Max: {item.maxStock}</span>
-                </div>
               </div>
 
               {/* Footer */}
-              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                <div className="flex items-center gap-3 text-xs text-gray-400">
-                  <span className="flex items-center gap-1">
-                    <Calendar size={12} />
-                    Updated: {new Date(item.lastUpdated).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
+              <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <Calendar size={12} />
+                  {new Date(item.lastUpdated).toLocaleDateString()}
+                </span>
+                <div className="flex items-center gap-1.5">
                   <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-[#0A1628]">
                     <Edit size={16} />
                   </button>
@@ -628,12 +843,12 @@ export default function InventoryPage() {
 
       {/* Pagination */}
       {filteredItems.length > itemsPerPage && (
-        <div className="mt-6 px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-5 px-4 py-3 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-sm text-gray-500">
             Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredItems.length)} of{' '}
             {filteredItems.length} items
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
@@ -654,7 +869,7 @@ export default function InventoryPage() {
                 <button
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
-                  className={`px-3 py-1 rounded-lg transition-colors ${
+                  className={`px-4 py-1.5 rounded-lg transition-colors text-sm ${
                     currentPage === pageNum ? 'bg-[#0A1628] text-white' : 'border border-gray-200 hover:bg-gray-50'
                   }`}
                 >
@@ -689,7 +904,7 @@ export default function InventoryPage() {
               </div>
               <button
                 onClick={() => setSelectedItem(null)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-xl"
               >
                 ✕
               </button>

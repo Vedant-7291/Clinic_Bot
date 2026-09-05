@@ -9,7 +9,7 @@ import {
   CalendarCheck, 
   BarChart3, 
   FileText, 
-  DollarSign,
+  IndianRupee,
   Stethoscope,
   Menu,
   X
@@ -22,7 +22,7 @@ const navItems = [
   { icon: UserPlus, label: 'Patients', href: '/patients' },
   { icon: CalendarCheck, label: 'Scheduled Visits', href: '/visits' },
   { icon: FileText, label: 'Reports', href: '/reports' },
-  { icon: DollarSign, label: 'Price', href: '/price' },
+  { icon: IndianRupee, label: 'Price', href: '/price' },
   { icon: FileText, label: 'Inventory', href: '/inventory' },
 ];
 
