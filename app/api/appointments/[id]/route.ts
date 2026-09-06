@@ -44,11 +44,12 @@ export async function PATCH(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    await Appointment.findByIdAndDelete(params.id);
+    const { id } = await params;
+    await Appointment.findByIdAndDelete(id);
     return NextResponse.json({ status: 'deleted' });
   } catch (error) {
     console.error('DELETE /api/appointments/[id] error:', error);
