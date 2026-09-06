@@ -6,12 +6,13 @@ import { REPORT_DEFINITIONS, buildReportCsv } from '@/lib/reports';
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { type: string } }
+  { params }: { params: Promise<{ type: string }> }
 ) {
   try {
     await connectDB();
 
-    const def = REPORT_DEFINITIONS.find((d) => d.id === params.type);
+    const { type } = await params;
+    const def = REPORT_DEFINITIONS.find((d) => d.id === type);
     if (!def) {
       return NextResponse.json({ error: 'Unknown report type' }, { status: 404 });
     }

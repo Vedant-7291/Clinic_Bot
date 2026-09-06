@@ -6,8 +6,10 @@ import Appointment from '../../../../models/Appointments';
 // appointment Completed/Cancelled or to assign a doctor.
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+   const { id } = await params;
+
   try {
     await connectDB();
     const body = await req.json();
@@ -18,7 +20,7 @@ export async function PATCH(
       allowedUpdates.assignedDoctor = body.assignedDoctor;
 
     const appointment = await Appointment.findByIdAndUpdate(
-      params.id,
+      id,
       allowedUpdates,
       { new: true }
     );
