@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FileText,
   Download,
@@ -9,12 +9,14 @@ import {
   MessageCircle,
   Users,
   ShieldCheck,
+  Loader2,
 } from 'lucide-react';
 
 // ============================================
-// Reports reflect what the WhatsApp bot actually produces: bookings,
-// department demand, and insurance coverage — plus the clinic's own
-// revenue report, which sits alongside booking data rather than inside it.
+// The report *list* below is still a static catalog of downloadable report
+// types (generating actual PDFs/CSVs is a separate build-out). The quick
+// stats strip, however, is now live — pulled from /api/reports/stats,
+// which aggregates real bookings out of MongoDB.
 // ============================================
 const reports = [
   {
@@ -57,14 +59,54 @@ const reports = [
 
 const reportTypes = ['All Types', 'Bookings', 'Insurance', 'Financial'];
 
-const quickStats = [
-  { label: 'Bookings via WhatsApp', value: 128, change: '+18%', icon: MessageCircle },
-  { label: 'New Patients (30d)', value: 34, change: '+9', icon: Users },
-  { label: 'Insured Bookings', value: '71%', change: '+4%', icon: ShieldCheck },
-];
+interface Stats {
+  totalBookings: number;
+  newPatients30d: number;
+  insuredPercent: number;
+}
 
 export default function ReportsPage() {
   const [typeFilter, setTypeFilter] = useState('All Types');
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/reports/stats', { cache: 'no-store' });
+        if (!res.ok) throw new Error('Failed to load stats');
+        const data: Stats = await res.json();
+        if (!cancelled) setStats(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!cancelled) setIsLoadingStats(false);
+      }
+    }
+    loadStats();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const quickStats = [
+    {
+      label: 'Bookings via WhatsApp',
+      value: stats?.totalBookings ?? '—',
+      icon: MessageCircle,
+    },
+    {
+      label: 'New Patients (30d)',
+      value: stats?.newPatients30d ?? '—',
+      icon: Users,
+    },
+    {
+      label: 'Insured Bookings',
+      value: stats ? `${stats.insuredPercent}%` : '—',
+      icon: ShieldCheck,
+    },
+  ];
 
   const filteredReports =
     typeFilter === 'All Types' ? reports : reports.filter((r) => r.type === typeFilter);
@@ -93,11 +135,12 @@ export default function ReportsPage() {
                     <Icon size={14} />
                     {stat.label}
                   </div>
-                  <p className="text-2xl font-bold text-[#0A1628]">{stat.value}</p>
+                  {isLoadingStats ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                  ) : (
+                    <p className="text-2xl font-bold text-[#0A1628]">{stat.value}</p>
+                  )}
                 </div>
-                <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-lg h-fit">
-                  {stat.change}
-                </span>
               </div>
             </div>
           );
