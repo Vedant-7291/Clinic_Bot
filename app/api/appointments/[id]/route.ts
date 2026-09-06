@@ -6,8 +6,10 @@ import Appointment from '../../../../models/Appointments';
 // appointment Completed/Cancelled or to assign a doctor.
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+   const { id } = await params;
+
   try {
     await connectDB();
     const body = await req.json();
@@ -18,7 +20,7 @@ export async function PATCH(
       allowedUpdates.assignedDoctor = body.assignedDoctor;
 
     const appointment = await Appointment.findByIdAndUpdate(
-      params.id,
+      id,
       allowedUpdates,
       { new: true }
     );
@@ -42,11 +44,12 @@ export async function PATCH(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    await Appointment.findByIdAndDelete(params.id);
+    const { id } = await params;
+    await Appointment.findByIdAndDelete(id);
     return NextResponse.json({ status: 'deleted' });
   } catch (error) {
     console.error('DELETE /api/appointments/[id] error:', error);
