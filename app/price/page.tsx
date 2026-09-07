@@ -255,7 +255,7 @@ export default function PricePage() {
           const isEditing = editingId === service.id;
 
           return (
-            <div key={service.id} className="card p-6 hover:shadow-lg transition-all duration-300">
+            <div key={service.id} className="card p-6 hover:shadow-lg transition-all duration-300 flex flex-col">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 bg-[#0A1628] rounded-lg flex items-center justify-center text-white flex-shrink-0">
                   <Icon size={24} />
@@ -266,7 +266,7 @@ export default function PricePage() {
               </div>
 
               <h3 className="text-lg font-semibold text-[#0A1628] mb-1">{service.name}</h3>
-              <p className="text-sm text-gray-500 mb-4">{service.description}</p>
+              <p className="text-sm text-gray-500 mb-4 flex-1">{service.description}</p>
 
               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <div>
@@ -307,24 +307,23 @@ export default function PricePage() {
                     </button>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => handleEditClick(service)}
-                    className="bg-black text-[#fdfdfd] hover:bg-blue-600 text-sm flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium"
-                  >
-                    <TrendingUp size={16} />
-                    Change Pricing
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEditClick(service)}
+                      className="bg-black text-[#fdfdfd] hover:bg-blue-600 text-sm flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium"
+                    >
+                      <TrendingUp size={16} />
+                      Change Pricing
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(service)}
+                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors flex items-center justify-center w-10 h-10"
+                      title="Delete Service"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 )}
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <button
-                  onClick={() => handleDeleteClick(service)}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-                >
-                  <Trash2 size={14} />
-                  Delete Service
-                </button>
               </div>
             </div>
           );

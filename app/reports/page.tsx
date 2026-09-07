@@ -26,7 +26,6 @@ const reports = [
     date: '2026-08-29',
     type: 'Bookings',
     downloads: 45,
-    size: '2.4 MB',
   },
   {
     id: '2',
@@ -35,7 +34,6 @@ const reports = [
     date: '2026-08-25',
     type: 'Bookings',
     downloads: 32,
-    size: '1.8 MB',
   },
   {
     id: '3',
@@ -44,7 +42,6 @@ const reports = [
     date: '2026-08-22',
     type: 'Insurance',
     downloads: 28,
-    size: '1.1 MB',
   },
   {
     id: '4',
@@ -53,7 +50,6 @@ const reports = [
     date: '2026-08-01',
     type: 'Financial',
     downloads: 19,
-    size: '2.7 MB',
   },
 ];
 
@@ -180,11 +176,10 @@ export default function ReportsPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50">
-                <th className="table-header">Report</th>
-                <th className="table-header hidden md:table-cell">Type</th>
-                <th className="table-header hidden lg:table-cell">Date</th>
-                <th className="table-header hidden sm:table-cell">Downloads</th>
-                <th className="table-header hidden lg:table-cell">Size</th>
+                <th className="table-header text-left">Report</th>
+                <th className="table-header text-center hidden md:table-cell">Type</th>
+                <th className="table-header text-center hidden lg:table-cell">Date</th>
+                <th className="table-header text-center hidden sm:table-cell">Downloads</th>
                 <th className="table-header text-center">Action</th>
               </tr>
             </thead>
@@ -197,14 +192,13 @@ export default function ReportsPage() {
                       <p className="text-xs text-gray-500">{report.description}</p>
                     </div>
                   </td>
-                  <td className="table-cell hidden md:table-cell">
+                  <td className="table-cell text-center hidden md:table-cell">
                     <span className="px-2 py-1 bg-[#0A1628] text-white text-xs rounded-lg">
                       {report.type}
                     </span>
                   </td>
-                  <td className="table-cell hidden lg:table-cell">{report.date}</td>
-                  <td className="table-cell hidden sm:table-cell">{report.downloads}</td>
-                  <td className="table-cell hidden lg:table-cell">{report.size}</td>
+                  <td className="table-cell text-center hidden lg:table-cell">{report.date}</td>
+                  <td className="table-cell text-center hidden sm:table-cell">{report.downloads}</td>
                   <td className="table-cell text-center">
                     <button className="p-2 bg-[#1A3A5C] text-white rounded-lg hover:bg-[#2A5A8C] transition-colors inline-flex items-center gap-1">
                       <Download size={16} />
@@ -215,7 +209,7 @@ export default function ReportsPage() {
               ))}
               {filteredReports.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-500">
+                  <td colSpan={5} className="text-center py-12 text-gray-500">
                     No reports under {typeFilter}.
                   </td>
                 </tr>

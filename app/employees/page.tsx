@@ -263,7 +263,7 @@ export default function EmployeesPage() {
         {filteredEmployees.map((employee) => {
           const DeptIcon = getDepartmentIcon(employee.department);
           return (
-            <div key={employee.id} className="card p-6 hover:shadow-lg transition-all duration-300">
+            <div key={employee.id} className="card p-6 hover:shadow-lg transition-all duration-300 flex flex-col">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-[#0A1628] rounded-full flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
@@ -283,7 +283,7 @@ export default function EmployeesPage() {
                 </button>
               </div>
 
-              <div className="mt-4 space-y-2">
+              <div className="mt-4 space-y-2 flex-1">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Mail size={14} className="text-gray-400 flex-shrink-0" />
                   <span className="truncate">{employee.email}</span>
@@ -298,23 +298,21 @@ export default function EmployeesPage() {
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-100 flex gap-2 justify-center">
-                <button 
-                  className="flex-1 btn-primary text-sm flex items-center justify-center gap-2 max-w-[200px]"
-                >
-                  <Calendar size={14} />
-                  Schedule
-                </button>
-              </div>
-
-              <div className="mt-3 flex justify-center">
-                <button
-                  onClick={() => handleDeleteClick(employee)}
-                  className="w-full max-w-[200px] bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-                >
-                  <Trash2 size={14} />
-                  Delete Employee
-                </button>
+              {/* Updated Action Buttons Section - Side by Side */}
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="flex gap-2">
+                  <button className="flex-1 btn-primary text-sm flex items-center justify-center gap-2 py-2.5">
+                    <Calendar size={14} />
+                    Schedule
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(employee)}
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Trash2 size={14} />
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           );

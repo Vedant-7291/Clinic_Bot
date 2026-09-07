@@ -550,6 +550,27 @@ function getStockHealth(item: InventoryItem): number {
   return Math.max(0, Math.min(100, Math.round(percentage)));
 }
 
+function generateSKU(category: string): string {
+  const prefix = category === 'Medications' ? 'MED' :
+                 category === 'Medical Supplies' ? 'SUP' :
+                 category === 'Equipment' ? 'EQP' : 'GEN';
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  return `${prefix}-${random}`;
+}
+
+function determineStatus(quantity: number, minStock: number, expiryDate?: string): InventoryItem['status'] {
+  if (expiryDate && new Date(expiryDate) < new Date()) {
+    return 'Expired';
+  }
+  if (quantity <= 0) {
+    return 'Out of Stock';
+  }
+  if (quantity < minStock) {
+    return 'Low Stock';
+  }
+  return 'In Stock';
+}
+
 // ============================================
 // Main Component
 // ============================================
@@ -560,14 +581,33 @@ export default function InventoryPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>(inventoryData);
+  const [newItem, setNewItem] = useState<Partial<InventoryItem>>({
+    name: '',
+    category: 'Medications',
+    description: '',
+    sku: '',
+    quantity: 0,
+    unit: 'Units',
+    minStock: 10,
+    maxStock: 50,
+    costPrice: 0,
+    sellingPrice: 0,
+    location: '',
+    supplier: '',
+    expiryDate: '',
+    status: 'In Stock',
+  });
+
   const itemsPerPage = 9; // 3 rows of 3 cards each
 
   // Get unique categories
-  const categories = ['All', ...new Set(inventoryData.map(item => item.category))];
+  const categories = ['All', ...new Set(inventoryItems.map(item => item.category))];
   const statuses = ['All', 'In Stock', 'Low Stock', 'Out of Stock', 'Expired'];
 
   // Apply filters
-  const filteredItems = inventoryData.filter(item => {
+  const filteredItems = inventoryItems.filter(item => {
     const matchesSearch = 
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -586,17 +626,85 @@ export default function InventoryPage() {
   const paginatedItems = filteredItems.slice(startIndex, startIndex + itemsPerPage);
 
   // KPI Calculations
-  const totalItems = inventoryData.length;
-  const totalValue = inventoryData.reduce((sum, item) => sum + (item.quantity * item.costPrice), 0);
-  const lowStockItems = inventoryData.filter(item => item.status === 'Low Stock').length;
-  const outOfStockItems = inventoryData.filter(item => item.status === 'Out of Stock').length;
-  const expiredItems = inventoryData.filter(item => item.status === 'Expired').length;
+  const totalItems = inventoryItems.length;
+  const totalValue = inventoryItems.reduce((sum, item) => sum + (item.quantity * item.costPrice), 0);
+  const lowStockItems = inventoryItems.filter(item => item.status === 'Low Stock').length;
+  const outOfStockItems = inventoryItems.filter(item => item.status === 'Out of Stock').length;
+  const expiredItems = inventoryItems.filter(item => item.status === 'Expired').length;
 
   // Reset page when filters change
   const handleFilterChange = (filterType: 'category' | 'status', value: string) => {
     if (filterType === 'category') setCategoryFilter(value);
     else setStatusFilter(value);
     setCurrentPage(1);
+  };
+
+  // Handle Add Item
+  const handleAddItem = () => {
+    // Validate required fields
+    if (!newItem.name || !newItem.category || !newItem.supplier || !newItem.location) {
+      alert('Please fill in all required fields (Name, Category, Supplier, Location)');
+      return;
+    }
+
+    const sku = newItem.sku || generateSKU(newItem.category || 'General');
+    const quantity = newItem.quantity || 0;
+    const minStock = newItem.minStock || 10;
+    const expiryDate = newItem.expiryDate || undefined;
+    const status = determineStatus(quantity, minStock, expiryDate);
+
+    const item: InventoryItem = {
+      id: Date.now().toString(),
+      name: newItem.name,
+      category: newItem.category || 'Medications',
+      description: newItem.description || '',
+      sku: sku,
+      quantity: quantity,
+      unit: newItem.unit || 'Units',
+      minStock: minStock,
+      maxStock: newItem.maxStock || 50,
+      costPrice: newItem.costPrice || 0,
+      sellingPrice: newItem.sellingPrice || 0,
+      location: newItem.location,
+      supplier: newItem.supplier,
+      expiryDate: expiryDate,
+      status: status,
+      lastUpdated: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    };
+
+    setInventoryItems([item, ...inventoryItems]);
+    setIsAddModalOpen(false);
+    setNewItem({
+      name: '',
+      category: 'Medications',
+      description: '',
+      sku: '',
+      quantity: 0,
+      unit: 'Units',
+      minStock: 10,
+      maxStock: 50,
+      costPrice: 0,
+      sellingPrice: 0,
+      location: '',
+      supplier: '',
+      expiryDate: '',
+      status: 'In Stock',
+    });
+    setCurrentPage(1);
+  };
+
+  // Handle Delete Item
+  const handleDeleteItem = (id: string) => {
+    if (confirm('Are you sure you want to delete this item?')) {
+      setInventoryItems(inventoryItems.filter(item => item.id !== id));
+    }
+  };
+
+  // Handle Edit Item (placeholder - you can implement full edit functionality)
+  const handleEditItem = (item: InventoryItem) => {
+    // For now, just show the item in the detail modal
+    setSelectedItem(item);
   };
 
   return (
@@ -609,7 +717,10 @@ export default function InventoryPage() {
             Track and manage all medical supplies, medications, and equipment
           </p>
         </div>
-        <button className="mt-3 lg:mt-0 bg-[#0A1628] text-white px-5 py-2.5 rounded-lg hover:bg-[#1A3A5C] transition-colors inline-flex items-center gap-2 text-sm font-medium">
+        <button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="mt-3 lg:mt-0 bg-[#0A1628] text-white px-5 py-2.5 rounded-lg hover:bg-[#1A3A5C] transition-colors inline-flex items-center gap-2 text-sm font-medium"
+        >
           <Plus size={20} /> Add Item
         </button>
       </div>
@@ -814,10 +925,16 @@ export default function InventoryPage() {
                   {new Date(item.lastUpdated).toLocaleDateString()}
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-[#0A1628]">
+                  <button 
+                    onClick={() => handleEditItem(item)}
+                    className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-[#0A1628]"
+                  >
                     <Edit size={16} />
                   </button>
-                  <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-red-600">
+                  <button 
+                    onClick={() => handleDeleteItem(item.id)}
+                    className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-red-600"
+                  >
                     <Trash2 size={16} />
                   </button>
                   <button
@@ -884,6 +1001,252 @@ export default function InventoryPage() {
             >
               <ChevronRight size={18} />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Add Item Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-100 p-6 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-[#0A1628]">Add New Inventory Item</h2>
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Item Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newItem.name || ''}
+                    onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                    placeholder="Enter item name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={newItem.category || 'Medications'}
+                    onChange={(e) => {
+                      const category = e.target.value;
+                      setNewItem({ 
+                        ...newItem, 
+                        category,
+                        sku: generateSKU(category)
+                      });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                  >
+                    <option value="Medications">Medications</option>
+                    <option value="Medical Supplies">Medical Supplies</option>
+                    <option value="Equipment">Equipment</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={newItem.description || ''}
+                  onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                  placeholder="Enter item description"
+                  rows={2}
+                />
+              </div>
+
+              {/* Stock Details */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Quantity <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={newItem.quantity === 0 ? '' : newItem.quantity}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const quantity = value === '' ? 0 : parseInt(value) || 0;
+                      const minStock = newItem.minStock || 10;
+                      setNewItem({ 
+                        ...newItem, 
+                        quantity,
+                        status: determineStatus(quantity, minStock, newItem.expiryDate)
+                      });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                    min="0"
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Unit
+                  </label>
+                  <input
+                    type="text"
+                    value={newItem.unit || 'Units'}
+                    onChange={(e) => setNewItem({ ...newItem, unit: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                    placeholder="e.g., Tablets, Boxes"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Min Stock
+                  </label>
+                  <input
+                    type="number"
+                    value={newItem.minStock === 0 ? '' : newItem.minStock}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const minStock = value === '' ? 0 : parseInt(value) || 0;
+                      setNewItem({ ...newItem, minStock });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                    min="0"
+                    placeholder="10"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Max Stock
+                  </label>
+                  <input
+                    type="number"
+                    value={newItem.maxStock === 0 ? '' : newItem.maxStock}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const maxStock = value === '' ? 0 : parseInt(value) || 0;
+                      setNewItem({ ...newItem, maxStock });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                    min="0"
+                    placeholder="50"
+                  />
+                </div>
+              </div>
+
+              {/* Pricing */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cost Price (₹)
+                  </label>
+                  <input
+                    type="number"
+                    value={newItem.costPrice === 0 ? '' : newItem.costPrice}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const costPrice = value === '' ? 0 : parseFloat(value) || 0;
+                      setNewItem({ ...newItem, costPrice });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Selling Price (₹)
+                  </label>
+                  <input
+                    type="number"
+                    value={newItem.sellingPrice === 0 ? '' : newItem.sellingPrice}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const sellingPrice = value === '' ? 0 : parseFloat(value) || 0;
+                      setNewItem({ ...newItem, sellingPrice });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              {/* Location & Supplier */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Location <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newItem.location || ''}
+                    onChange={(e) => setNewItem({ ...newItem, location: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                    placeholder="e.g., Pharmacy Aisle 3"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Supplier <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newItem.supplier || ''}
+                    onChange={(e) => setNewItem({ ...newItem, supplier: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                    placeholder="Enter supplier name"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Expiry Date (optional)
+                </label>
+                <input
+                  type="date"
+                  value={newItem.expiryDate || ''}
+                  onChange={(e) => setNewItem({ 
+                    ...newItem, 
+                    expiryDate: e.target.value,
+                    status: determineStatus(newItem.quantity || 0, newItem.minStock || 10, e.target.value)
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]"
+                />
+              </div>
+
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Auto-generated SKU:</span> {newItem.sku || generateSKU(newItem.category || 'Medications')}
+                </p>
+              </div>
+            </div>
+
+            <div className="sticky bottom-0 bg-white border-t border-gray-100 p-6 flex gap-3">
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddItem}
+                className="flex-1 px-4 py-2.5 bg-[#0A1628] text-white rounded-lg hover:bg-[#1A3A5C] transition-colors font-medium inline-flex items-center justify-center gap-2"
+              >
+                <Plus size={18} /> Add Item
+              </button>
+            </div>
           </div>
         </div>
       )}
